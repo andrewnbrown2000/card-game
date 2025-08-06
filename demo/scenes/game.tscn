@@ -23,6 +23,3 @@ mouse_filter = 2
 texture = ExtResource("1_uwrxv")
 
 [node name="Card Border" parent="." instance=ExtResource("2_yqjtg")]
-anchors_preset = 0
-grow_horizontal = 1
-grow_vertical = 1
