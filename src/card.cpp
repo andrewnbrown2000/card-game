@@ -3,6 +3,10 @@
 #include "godot_cpp/classes/input_event_mouse_button.hpp"
 #include "godot_cpp/classes/input_event_mouse_motion.hpp"
 #include "godot_cpp/classes/viewport.hpp"
+#include "godot_cpp/classes/area2d.hpp"
+#include "godot_cpp/classes/collision_shape2d.hpp"
+#include "godot_cpp/classes/rectangle_shape2d.hpp"
+
 
 void Card::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture"), &Card::set_texture);
@@ -10,6 +14,9 @@ void Card::_bind_methods() {
 	
 	ClassDB::bind_method(D_METHOD("set_size"), &Card::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &Card::get_size);
+	
+	ClassDB::bind_method(D_METHOD("_on_mouse_entered"), &Card::_on_mouse_entered);
+	ClassDB::bind_method(D_METHOD("_on_mouse_exited"), &Card::_on_mouse_exited);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture");
 }
@@ -19,20 +26,29 @@ Card::Card() {
     add_child(sprite);
     sprite->set_centered(true);
 
+    hover_area = memnew(Area2D);
+    add_child(hover_area);
+    
+    collision_shape = memnew(CollisionShape2D);
+    hover_area->add_child(collision_shape);
+    
+    shape.instantiate();
+    collision_shape->set_shape(shape);
+
+    hover_area->connect("mouse_entered", Callable(this, "_on_mouse_entered"));
+    hover_area->connect("mouse_exited", Callable(this, "_on_mouse_exited"));
+
     set_process_unhandled_input(true); // required for _unhandled_input() callback
-
-    // Set the card size to the texture size if available, otherwise do nothing
-    if (texture.is_valid()) {
-        set_size(texture->get_size());
-    }
-
-    print_line("Card created and input processing enabled");
 }
 
 void Card::set_texture(const Ref<Texture2D> &p_texture) {
-	texture = p_texture;
-	if (sprite) {
+    texture = p_texture;
+    if (sprite) {
         sprite->set_texture(texture);
+    }
+
+    if (texture.is_valid()) {
+        set_size(texture->get_size());
     }
 }
 
@@ -45,6 +61,10 @@ void Card::set_size(const Vector2 &p_size) {
         Vector2 texture_size = texture->get_size();
         if (texture_size.x > 0 && texture_size.y > 0) {
             set_scale(p_size / texture_size);
+            
+            if (shape.is_valid()) { 
+                shape->set_size(p_size);
+            }
         }
     }
 }
@@ -97,6 +117,7 @@ void Card::_on_mouse_button_pressed(const Ref<InputEventMouseButton> &event) {
             }
         } else {
             dragging = false;
+            print_line("Mouse button released");
         }
     }
 }
@@ -109,4 +130,16 @@ void Card::_on_mouse_motion(const Ref<InputEventMouseMotion> &event) {
         new_position.y = CLAMP(new_position.y, 0.0f + (get_size().y) / 2, viewport_size.y - (get_size().y) / 2);
         set_global_position(new_position);
     }
+}
+
+void Card::_on_mouse_entered() {
+    hovering = true;
+    set_scale(Vector2(1.1, 1.1));
+}
+
+void Card::_on_mouse_exited() { //small bug when releasing mouse off screen
+    if (dragging == false) {
+        set_scale(Vector2(1.0, 1.0));
+    }
+    hovering = false;
 }

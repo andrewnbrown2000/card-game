@@ -1,7 +1,4 @@
-#ifndef REGISTER_TYPES_H
-#define REGISTER_TYPES_H
+#pragma once
 
 void initialize_gdextension_types();
 void uninitialize_gdextension_types();
-
-#endif
