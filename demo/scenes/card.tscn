@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://bayh42eroa1ra"]
+
+[ext_resource type="Texture2D" uid="uid://58ya37u0ilfq" path="res://assets/king_card.svg" id="1_5p55f"]
+
+[node name="Card Border" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 113.0
+offset_bottom = 159.0
+
+[node name="Card" type="Card" parent="."]
+texture = ExtResource("1_5p55f")
+layout_mode = 0

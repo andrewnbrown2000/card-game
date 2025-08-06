@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpnrjlhtpbchp"]
+
+[ext_resource type="Texture2D" uid="uid://bjdomralutugp" path="res://assets/background.svg" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://bayh42eroa1ra" path="res://scenes/card.tscn" id="2_yqjtg"]
+
+[node name="game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_uwrxv")
+
+[node name="Card Border" parent="." instance=ExtResource("2_yqjtg")]
+anchors_preset = 0
+grow_horizontal = 1
+grow_vertical = 1
