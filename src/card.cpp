@@ -116,8 +116,12 @@ void Card::_on_mouse_button_pressed(const Ref<InputEventMouseButton> &event) {
                 }
             }
         } else {
+            if (hovering) {
+                set_scale(Vector2(1.1, 1.1));
+            } else {
+                set_scale(Vector2(1.0, 1.0));
+            }
             dragging = false;
-            print_line("Mouse button released");
         }
     }
 }
@@ -133,11 +137,11 @@ void Card::_on_mouse_motion(const Ref<InputEventMouseMotion> &event) {
 }
 
 void Card::_on_mouse_entered() {
-    hovering = true;
     set_scale(Vector2(1.1, 1.1));
+    hovering = true;
 }
 
-void Card::_on_mouse_exited() { //small bug when releasing mouse off screen
+void Card::_on_mouse_exited() {
     if (dragging == false) {
         set_scale(Vector2(1.0, 1.0));
     }

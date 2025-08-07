@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://58ya37u0ilfq" path="res://assets/king_card.svg" id="1_d81rb"]
 
 [node name="card wrapper" type="Node2D"]
+position = Vector2(467, 330)
 
 [node name="card" type="Card" parent="."]
 texture = ExtResource("1_d81rb")
