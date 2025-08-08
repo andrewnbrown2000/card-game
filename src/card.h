@@ -45,6 +45,7 @@ public:
 	Ref<AtlasTexture> get_texture() const;
 	
 	void set_card(const String &card_name); // Set which card this represents
+	String get_card() const; // Get current card name
 
 	void set_size(const Vector2 &p_size);
 	Vector2 get_size() const;

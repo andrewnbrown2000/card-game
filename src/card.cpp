@@ -14,6 +14,7 @@ void Card::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_texture"), &Card::get_texture);
 	
 	ClassDB::bind_method(D_METHOD("set_card", "card_name"), &Card::set_card);
+	ClassDB::bind_method(D_METHOD("get_card"), &Card::get_card);
 	
 	ClassDB::bind_method(D_METHOD("set_size"), &Card::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &Card::get_size);
@@ -21,10 +22,19 @@ void Card::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_on_mouse_entered"), &Card::_on_mouse_entered);
 	ClassDB::bind_method(D_METHOD("_on_mouse_exited"), &Card::_on_mouse_exited);
 
+	// Create a string with all available card names separated by commas for the dropdown hint
+	String card_options = "spades_ace,spades_two,spades_three,spades_four,spades_five,spades_six,spades_seven,spades_eight,spades_nine,spades_ten,spades_jack,spades_queen,spades_king,"
+						  "hearts_ace,hearts_two,hearts_three,hearts_four,hearts_five,hearts_six,hearts_seven,hearts_eight,hearts_nine,hearts_ten,hearts_jack,hearts_queen,hearts_king,"
+						  "diamonds_ace,diamonds_two,diamonds_three,diamonds_four,diamonds_five,diamonds_six,diamonds_seven,diamonds_eight,diamonds_nine,diamonds_ten,diamonds_jack,diamonds_queen,diamonds_king,"
+						  "clubs_ace,clubs_two,clubs_three,clubs_four,clubs_five,clubs_six,clubs_seven,clubs_eight,clubs_nine,clubs_ten,clubs_jack,clubs_queen,clubs_king";
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "AtlasTexture"), "set_texture", "get_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "card_name", PROPERTY_HINT_ENUM, card_options), "set_card", "get_card");
 }
 
 Card::Card() {
+    current_card = "spades_ace"; //default card
+     
     sprite = memnew(Sprite2D);
     add_child(sprite);
     sprite->set_centered(true);
@@ -45,14 +55,13 @@ Card::Card() {
 }
 
 void Card::_ready() {
+    //load card positions from file if not already loaded
     if (card_positions.is_empty()) {
         Ref<FileAccess> file = FileAccess::open("res://data/card_texture_positions.txt", FileAccess::READ);
         if (!file.is_valid()) {
             print_line("Could not load card positions file, using defaults");
-            // Add fallback positions
             Array ace_pos;
-            ace_pos.push_back(12);
-            ace_pos.push_back(2);
+            ace_pos = Array::make(12, 2); // add fallback pos so it compiles
             card_positions["spades_ace"] = ace_pos;
         } else {
             print_line("Loading card positions from file...");
@@ -61,8 +70,7 @@ void Card::_ready() {
             while (!file->eof_reached()) {
                 String line = file->get_line().strip_edges();
                 
-                // Skip empty lines and comments
-                if (line.is_empty() || line.begins_with("#")) {
+                if (line.is_empty() || line.begins_with("#")) { // skip empty lines and comments
                     continue;
                 }
                 
@@ -84,6 +92,8 @@ void Card::_ready() {
             print_line("Loaded " + String::num_int64(loaded_count) + " card positions from file");
         }
     }
+    
+    set_texture(Ref<AtlasTexture>()); //necessary to initialize texture and size
 }
 
 void Card::set_texture(const Ref<AtlasTexture> &p_texture) {
@@ -110,7 +120,6 @@ void Card::set_texture(const Ref<AtlasTexture> &p_texture) {
             atlas_texture->set_region(Rect2(12, 2, 40, 60)); // default to ace of spades
             print_line("Card not found: " + current_card + ", using default");
         }
-        
         texture = atlas_texture;
     }
 
@@ -220,6 +229,14 @@ void Card::_on_mouse_exited() {
 }
 
 void Card::set_card(const String &card_name) {
-    current_card = card_name;
-    set_texture(Ref<AtlasTexture>()); // reload texture with new card
+    if (current_card != card_name) {
+        current_card = card_name;
+        set_texture(Ref<AtlasTexture>()); // reload texture with new card
+        
+        notify_property_list_changed(); // so it updates in editor when changed
+    }
+}
+
+String Card::get_card() const {
+    return current_card;
 }

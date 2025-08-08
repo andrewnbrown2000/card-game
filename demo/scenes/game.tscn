@@ -1,7 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpnrjlhtpbchp"]
+[gd_scene load_steps=6 format=3 uid="uid://dpnrjlhtpbchp"]
 
 [ext_resource type="Texture2D" uid="uid://bjdomralutugp" path="res://assets/background.svg" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://bayh42eroa1ra" path="res://scenes/card.tscn" id="2_yqjtg"]
+[ext_resource type="Texture2D" uid="uid://cxexq6elr3dmt" path="res://assets/deck_classic_sepia_2color_0.png" id="3_lnu2h"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lnu2h"]
+atlas = ExtResource("3_lnu2h")
+region = Rect2(12, 2, 40, 60)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lbhrr"]
+atlas = ExtResource("3_lnu2h")
+region = Rect2(460, 2, 40, 60)
 
 [node name="game" type="Control"]
 layout_mode = 3
@@ -23,3 +32,9 @@ mouse_filter = 2
 texture = ExtResource("1_uwrxv")
 
 [node name="Card" parent="." instance=ExtResource("2_yqjtg")]
+texture = SubResource("AtlasTexture_lnu2h")
+
+[node name="Card2" parent="." instance=ExtResource("2_yqjtg")]
+texture = SubResource("AtlasTexture_lbhrr")
+card_name = "spades_eight"
+position = Vector2(429, 403)
