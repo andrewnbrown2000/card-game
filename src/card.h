@@ -7,6 +7,7 @@
 #include "godot_cpp/core/class_db.hpp"
 #include "godot_cpp/classes/node2d.hpp"
 #include "godot_cpp/classes/sprite2d.hpp"
+#include "godot_cpp/classes/atlas_texture.hpp"
 #include "godot_cpp/classes/area2d.hpp"
 #include "godot_cpp/classes/collision_shape2d.hpp"
 #include "godot_cpp/classes/rectangle_shape2d.hpp"
@@ -21,7 +22,7 @@ class Card : public Node2D {
 	GDCLASS(Card, Node2D);
 
 	Sprite2D *sprite;
-	Ref<Texture2D> texture;
+	Ref<AtlasTexture> texture;
 
 	// for hover signals
 	Area2D *hover_area;
@@ -37,9 +38,13 @@ protected:
 
 public:
 	Card();
+	
+	virtual void _ready() override;
 
-	void set_texture(const Ref<Texture2D> &p_texture);
-	Ref<Texture2D> get_texture() const;
+	void set_texture(const Ref<AtlasTexture> &p_texture);
+	Ref<AtlasTexture> get_texture() const;
+	
+	void set_card(const String &card_name); // Set which card this represents
 
 	void set_size(const Vector2 &p_size);
 	Vector2 get_size() const;
@@ -52,5 +57,9 @@ public:
 	//hover animation using signals
 	void _on_mouse_entered();
 	void _on_mouse_exited();
+
+private:
+	Dictionary card_positions;
+	String current_card = "spades_ace"; // default card, later add a dropdown to select
 
 };

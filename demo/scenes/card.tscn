@@ -1,9 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://bayh42eroa1ra"]
+[gd_scene load_steps=3 format=3 uid="uid://bayh42eroa1ra"]
 
-[ext_resource type="Texture2D" uid="uid://58ya37u0ilfq" path="res://assets/king_card.svg" id="1_d81rb"]
+[ext_resource type="Texture2D" uid="uid://cxexq6elr3dmt" path="res://assets/deck_classic_sepia_2color_0.png" id="1_d81rb"]
 
-[node name="card wrapper" type="Node2D"]
-position = Vector2(467, 330)
+[sub_resource type="AtlasTexture" id="AtlasTexture_d81rb"]
+atlas = ExtResource("1_d81rb")
+region = Rect2(12, 2, 40, 60)
 
-[node name="card" type="Card" parent="."]
-texture = ExtResource("1_d81rb")
+[node name="Card" type="Card"]
+texture = SubResource("AtlasTexture_d81rb")
+position = Vector2(381, 260)

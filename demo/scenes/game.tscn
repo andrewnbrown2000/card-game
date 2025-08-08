@@ -22,4 +22,4 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("1_uwrxv")
 
-[node name="Card Border" parent="." instance=ExtResource("2_yqjtg")]
+[node name="Card" parent="." instance=ExtResource("2_yqjtg")]

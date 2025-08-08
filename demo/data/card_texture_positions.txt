@@ -1,0 +1,15 @@
+#x,y        #w, h always = 40, 60
+
+spades_ace = 12,2
+spades_two = 76,2
+spades_three = 140,2
+spades_four = 204,2
+spades_five = 268,2
+spades_six = 332,2
+spades_seven = 396,2
+spades_eight = 460,2
+spades_nine = 524,2
+spades_ten = 588,2
+spades_jack = 652,2
+spades_queen = 716,2
+spades_king = 780,2
