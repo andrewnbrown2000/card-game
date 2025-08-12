@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://ddo7uydp7gxh"]
+
+[node name="Deck" type="Deck"]
+position = Vector2(0, -1)

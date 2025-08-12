@@ -12,25 +12,22 @@
 void Card::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture"), &Card::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &Card::get_texture);
-	
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "AtlasTexture"), "set_texture", "get_texture");
+
 	ClassDB::bind_method(D_METHOD("set_card", "card_name"), &Card::set_card);
 	ClassDB::bind_method(D_METHOD("get_card"), &Card::get_card);
+    // create string for a dropdown list
+	String card_options = "spades_ace,spades_two,spades_three,spades_four,spades_five,spades_six,spades_seven,spades_eight,spades_nine,spades_ten,spades_jack,spades_queen,spades_king,"
+						  "hearts_ace,hearts_two,hearts_three,hearts_four,hearts_five,hearts_six,hearts_seven,hearts_eight,hearts_nine,hearts_ten,hearts_jack,hearts_queen,hearts_king,"
+						  "diamonds_ace,diamonds_two,diamonds_three,diamonds_four,diamonds_five,diamonds_six,diamonds_seven,diamonds_eight,diamonds_nine,diamonds_ten,diamonds_jack,diamonds_queen,diamonds_king,"
+						  "clubs_ace,clubs_two,clubs_three,clubs_four,clubs_five,clubs_six,clubs_seven,clubs_eight,clubs_nine,clubs_ten,clubs_jack,clubs_queen,clubs_king";
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "card_name", PROPERTY_HINT_ENUM, card_options), "set_card", "get_card");
 	
 	ClassDB::bind_method(D_METHOD("set_size"), &Card::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &Card::get_size);
 	
 	ClassDB::bind_method(D_METHOD("_on_mouse_entered"), &Card::_on_mouse_entered);
-	ClassDB::bind_method(D_METHOD("_on_mouse_exited"), &Card::_on_mouse_exited);
-
-	// Create a string with all available card names separated by commas for the dropdown hint
-	String card_options = "spades_ace,spades_two,spades_three,spades_four,spades_five,spades_six,spades_seven,spades_eight,spades_nine,spades_ten,spades_jack,spades_queen,spades_king,"
-						  "hearts_ace,hearts_two,hearts_three,hearts_four,hearts_five,hearts_six,hearts_seven,hearts_eight,hearts_nine,hearts_ten,hearts_jack,hearts_queen,hearts_king,"
-						  "diamonds_ace,diamonds_two,diamonds_three,diamonds_four,diamonds_five,diamonds_six,diamonds_seven,diamonds_eight,diamonds_nine,diamonds_ten,diamonds_jack,diamonds_queen,diamonds_king,"
-						  "clubs_ace,clubs_two,clubs_three,clubs_four,clubs_five,clubs_six,clubs_seven,clubs_eight,clubs_nine,clubs_ten,clubs_jack,clubs_queen,clubs_king";
-
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "AtlasTexture"), "set_texture", "get_texture");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "card_name", PROPERTY_HINT_ENUM, card_options), "set_card", "get_card");
-}
+	ClassDB::bind_method(D_METHOD("_on_mouse_exited"), &Card::_on_mouse_exited);}
 
 Card::Card() {
     current_card = "spades_ace"; //default card

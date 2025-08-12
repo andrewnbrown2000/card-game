@@ -6,6 +6,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "card.h"
+#include "deck.h"
 
 using namespace godot;
 
@@ -15,6 +16,7 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 		return;
 	}
 	GDREGISTER_CLASS(Card);
+	GDREGISTER_CLASS(Deck);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
