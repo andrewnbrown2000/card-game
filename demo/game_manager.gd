@@ -57,7 +57,6 @@ func load_card_data():
 	print("Loaded ", available_cards.size(), " unique cards from file")
 
 func reset_deck():
-	"""Reset the deck so all cards can be drawn again"""
 	available_cards.clear()
 	drawn_cards.clear()
 	
@@ -91,7 +90,7 @@ func create_new_card():
 	available_cards.remove_at(random_index)
 	drawn_cards.append(selected_card.name)
 	
-    # texture setup
+	# texture setup
 	var atlas_texture = AtlasTexture.new()
 	var main_texture = load("res://assets/deck_classic_sepia_2color_0.png") as Texture2D
 	atlas_texture.atlas = main_texture
@@ -107,16 +106,5 @@ func create_new_card():
 	
 	print("Drew card: ", selected_card.name, " (", available_cards.size(), " cards remaining)")
 	
-	# Optional: Auto-reset deck when empty
 	if available_cards.is_empty():
-		print("Deck is empty! You could call reset_deck() to reshuffle.")
-
-func remove_card(card: Card):
-	"""Call this function when a card should be removed from play"""
-	if card in cards_in_play:
-		cards_in_play.erase(card)
-		card.queue_free()
-
-func get_cards_count() -> int:
-	"""Returns the number of cards currently in play"""
-	return cards_in_play.size()
+		reset_deck()

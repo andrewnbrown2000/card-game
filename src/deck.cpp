@@ -72,8 +72,6 @@ void Deck::_on_mouse_button_pressed(const Ref<InputEventMouseButton> &event) {
                     print_line("Signal 'deck_pressed' emitted.");
                 }
             }
-        } else {
-            print_line("left mouse button not pressed");
         }
     }
 }

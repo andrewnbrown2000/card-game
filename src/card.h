@@ -24,10 +24,11 @@ class Card : public Node2D {
 	Sprite2D *sprite;
 	Ref<AtlasTexture> texture;
 
-	// for hover signals
-	Area2D *hover_area;
+	// for hover and collision signals
+	Area2D *interaction_area;
 	CollisionShape2D *collision_shape;
 	Ref<RectangleShape2D> shape; // not a node, a resource on the CollisionShape2D
+
 
 	Vector2 drag_offset;
 
@@ -35,6 +36,8 @@ protected:
 	static void _bind_methods();
 	bool dragging = false;
 	bool hovering = false;
+	bool colliding = false;
+
 
 public:
 	Card();
@@ -44,8 +47,8 @@ public:
 	void set_texture(const Ref<AtlasTexture> &p_texture);
 	Ref<AtlasTexture> get_texture() const;
 	
-	void set_card(const String &card_name); // Set which card this represents
-	String get_card() const; // Get current card name
+	void set_card(const String &card_name);
+	String get_card() const;
 
 	void set_size(const Vector2 &p_size);
 	Vector2 get_size() const;
@@ -58,9 +61,21 @@ public:
 	//hover animation using signals
 	void _on_mouse_entered();
 	void _on_mouse_exited();
+	
+	//area collision detection
+	void _on_area_entered(Area2D *area);
+	void _on_area_exited(Area2D *area);
+
+	//collision
+	void _on_body_entered(Node *body);
+	void _on_body_exited(Node *body);
+
+	// continuous collision handling
+	virtual void _physics_process(double delta) override;
 
 private:
 	Dictionary card_positions;
 	String current_card = "spades_ace"; // default card, later add a dropdown to select
+	Array colliding_cards; // keep track of cards currently colliding with this one
 
 };

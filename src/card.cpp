@@ -25,30 +25,34 @@ void Card::_bind_methods() {
 	
 	ClassDB::bind_method(D_METHOD("set_size"), &Card::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &Card::get_size);
-	
-	ClassDB::bind_method(D_METHOD("_on_mouse_entered"), &Card::_on_mouse_entered);
-	ClassDB::bind_method(D_METHOD("_on_mouse_exited"), &Card::_on_mouse_exited);}
+
+	ClassDB::bind_method(D_METHOD("_on_area_entered", "area"), &Card::_on_area_entered);
+	ClassDB::bind_method(D_METHOD("_on_area_exited", "area"), &Card::_on_area_exited);
+}
 
 Card::Card() {
-    current_card = "spades_ace"; //default card
+    current_card = "spades_ace"; // default card
      
     sprite = memnew(Sprite2D);
     add_child(sprite);
     sprite->set_centered(true);
 
-    hover_area = memnew(Area2D);
-    add_child(hover_area);
+    interaction_area = memnew(Area2D);
+    add_child(interaction_area);
     
     collision_shape = memnew(CollisionShape2D);
-    hover_area->add_child(collision_shape);
+    interaction_area->add_child(collision_shape);
     
     shape.instantiate();
     collision_shape->set_shape(shape);
 
-    hover_area->connect("mouse_entered", Callable(this, "_on_mouse_entered"));
-    hover_area->connect("mouse_exited", Callable(this, "_on_mouse_exited"));
+    interaction_area->connect("area_entered", Callable(this, "_on_area_entered"));
+    interaction_area->connect("area_exited", Callable(this, "_on_area_exited"));
 
     set_process_unhandled_input(true); // required for _unhandled_input() callback
+    set_physics_process(true); // required for _physics_process() callback
+    
+    set_texture(Ref<AtlasTexture>()); // necessary to initialize texture and size
 }
 
 void Card::_ready() {
@@ -89,7 +93,7 @@ void Card::_ready() {
             print_line("Loaded " + String::num_int64(loaded_count) + " card positions from file");
         }
     }
-    
+
     set_texture(Ref<AtlasTexture>()); //necessary to initialize texture and size
 }
 
@@ -153,6 +157,20 @@ Vector2 Card::get_size() const {
     return Vector2();
 }
 
+void Card::set_card(const String &card_name) {
+    if (current_card != card_name) {
+        current_card = card_name;
+        set_texture(Ref<AtlasTexture>()); // reload texture with new card
+        
+        notify_property_list_changed(); // so it updates in editor when changed
+    }
+}
+
+String Card::get_card() const {
+    return current_card;
+}
+
+//manual event handling
 void Card::_unhandled_input(const Ref<InputEvent> &event) {    
     Ref<InputEventMouseButton> mouse_button = event;
     if (mouse_button.is_valid()) {
@@ -167,6 +185,7 @@ void Card::_unhandled_input(const Ref<InputEvent> &event) {
     }
 }
 
+//manual handled methods (managed by _unhandled_input)
 void Card::_on_mouse_button_pressed(const Ref<InputEventMouseButton> &event) {
     if (event->get_button_index() == MOUSE_BUTTON_LEFT) {
         Vector2 mouse_pos = event->get_global_position();
@@ -225,15 +244,62 @@ void Card::_on_mouse_exited() {
     hovering = false;
 }
 
-void Card::set_card(const String &card_name) {
-    if (current_card != card_name) {
-        current_card = card_name;
-        set_texture(Ref<AtlasTexture>()); // reload texture with new card
-        
-        notify_property_list_changed(); // so it updates in editor when changed
+//engine handled methods
+void Card::_on_area_entered(Area2D *area) {
+    Card *other_card = Object::cast_to<Card>(area->get_parent());
+    if (!other_card) {
+        return;
+    }
+    
+    // Add the card to our collision list if it's not already there
+    if (!colliding_cards.has(other_card)) {
+        colliding_cards.push_back(other_card);
+    }
+    
+    colliding = !colliding_cards.is_empty();
+    
+    if (other_card) {
+        print_line(other_card->get_card() + " entered collision with " + get_card());
     }
 }
 
-String Card::get_card() const {
-    return current_card;
+void Card::_on_area_exited(Area2D *area) {
+    Card *other_card = Object::cast_to<Card>(area->get_parent());
+    if (other_card) {
+        // Remove the card from our collision list
+        colliding_cards.erase(other_card);
+        colliding = !colliding_cards.is_empty();
+        
+        print_line(other_card->get_card() + " exited collision with " + get_card());
+    }
+}
+
+void Card::_physics_process(double delta) {
+    if (dragging) {
+        return;
+    }
+    
+    // Process all currently colliding cards
+    for (int i = 0; i < colliding_cards.size(); i++) {
+        Variant card_variant = colliding_cards[i];
+        Card *other_card = Object::cast_to<Card>(card_variant);
+        
+        // Skip if the other card is being dragged or invalid
+        if (!other_card || other_card->dragging) {
+            continue;
+        }
+        
+        // Calculate direction vector from other card to this card
+        Vector2 direction = get_global_position() - other_card->get_global_position();
+        
+        // Only apply force if cards are close enough
+        if (direction.length() > 0 && direction.length() < 100.0f) { // Adjust threshold as needed
+            direction = direction.normalized();
+            float push_force = 100.0f * delta; // Adjust force as needed
+            
+            // Move this card away from the other card
+            Vector2 new_position = get_global_position() + (direction * push_force);
+            set_global_position(new_position);
+        }
+    }
 }
